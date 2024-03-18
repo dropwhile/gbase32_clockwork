@@ -1,23 +1,27 @@
 import gleam/string
 import gleam/iterator.{Next}
-import gleam/dict
 import gleam/list
-import gbase32/codebook.{
-  type CodeBook, type DecodeBook, type EncodeBook, type Options, CodeBook,
-  Lowercase,
+import gleam/dict
+import gbase32_clockwork/encoder.{decode, encode}
+import gbase32_clockwork/options.{type Options, Lowercase}
+import gbase32_clockwork/codebook.{
+  type CodeBook, type DecodeBook, type DecodeFn, type EncodeBook, type EncodeFn,
+  CodeBook,
 }
 
-pub const clockwork = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+const clockwork_codebook = "0123456789abcdefghjkmnpqrstvwxyz"
 
 pub fn new(options options: List(Options)) -> CodeBook {
   let clockwork_case = case list.contains(options, Lowercase) {
     True ->
-      clockwork
+      clockwork_codebook
       |> string.lowercase
-    False -> clockwork
+    False ->
+      clockwork_codebook
+      |> string.uppercase
   }
 
-  let encoder: EncodeBook =
+  let encodebook: EncodeBook =
     clockwork_case
     |> string.to_graphemes()
     |> iterator.from_list()
@@ -25,7 +29,7 @@ pub fn new(options options: List(Options)) -> CodeBook {
     |> iterator.to_list()
     |> dict.from_list()
 
-  let decoder_lower: DecodeBook =
+  let decodebook_lower: DecodeBook =
     clockwork_case
     |> string.lowercase()
     |> string.to_graphemes()
@@ -34,8 +38,8 @@ pub fn new(options options: List(Options)) -> CodeBook {
     |> iterator.to_list()
     |> dict.from_list()
 
-  let decoder_upper: DecodeBook =
-    clockwork
+  let decodebook_upper: DecodeBook =
+    clockwork_codebook
     |> string.uppercase()
     |> string.to_graphemes()
     |> iterator.from_list()
@@ -44,7 +48,7 @@ pub fn new(options options: List(Options)) -> CodeBook {
     |> dict.from_list()
 
   // add aliases
-  let decoder_updates =
+  let decodebook_updates =
     dict.from_list([
       #("O", 0),
       #("o", 0),
@@ -54,10 +58,13 @@ pub fn new(options options: List(Options)) -> CodeBook {
       #("l", 1),
     ])
 
-  let decoder =
-    decoder_lower
-    |> dict.merge(decoder_upper)
-    |> dict.merge(decoder_updates)
+  let decodebook =
+    decodebook_lower
+    |> dict.merge(decodebook_upper)
+    |> dict.merge(decodebook_updates)
 
-  CodeBook(encoder: encoder, decoder: decoder, options: options)
+  let encode_fn: EncodeFn = encode(encodebook, _)
+  let decode_fn: DecodeFn = decode(decodebook, _)
+
+  CodeBook(encode: encode_fn, decode: decode_fn, options: options)
 }

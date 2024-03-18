@@ -1,4 +1,4 @@
-name = "gbase32"
+name = "gbase32_clockwork"
 version = "1.0.0"
 gleam = ">= 0.32.0"
 
@@ -15,7 +15,6 @@ gleam = ">= 0.32.0"
 
 [dependencies]
 gleam_stdlib = "~> 0.34 or ~> 1.0"
-glearray = "~> 0.2"
 
 [dev-dependencies]
 gleeunit = "~> 1.0"

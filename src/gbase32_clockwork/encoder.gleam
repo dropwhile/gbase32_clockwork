@@ -5,21 +5,21 @@ import gleam/int.{bitwise_shift_left}
 import gleam/list
 import gleam/result
 import gleam/string
-import gbase32/codebook.{type CodeBook}
+import gbase32_clockwork/codebook.{type DecodeBook, type EncodeBook}
 
-fn to_symbol(c: Int, codebook: CodeBook) -> Result(String, String) {
-  dict.get(codebook.encoder, c)
+fn to_symbol(c: Int, codebook: EncodeBook) -> Result(String, String) {
+  dict.get(codebook, c)
   |> result.map_error(fn(_) { "Encoding outside range" })
 }
 
-fn from_symbol(sym: String, codebook: CodeBook) -> Result(Int, String) {
+fn from_symbol(sym: String, codebook: DecodeBook) -> Result(Int, String) {
   sym
-  |> dict.get(codebook.decoder, _)
+  |> dict.get(codebook, _)
   |> result.map_error(fn(_) { "Encoding outside range" })
 }
 
 fn encode_rec(
-  codebook: CodeBook,
+  codebook: EncodeBook,
   input: BitArray,
   acc: Result(BytesBuilder, String),
 ) -> Result(BytesBuilder, String) {
@@ -71,7 +71,7 @@ fn encode_rec(
 }
 
 fn decode_rec(
-  codebook: CodeBook,
+  codebook: DecodeBook,
   input: List(String),
   counter: Int,
   acc: Result(BytesBuilder, String),
@@ -105,7 +105,7 @@ fn decode_rec(
   }
 }
 
-pub fn encode(codebook: CodeBook, input: String) -> Result(String, String) {
+pub fn encode(codebook: EncodeBook, input: String) -> Result(String, String) {
   let encoded =
     input
     |> bit_array.from_string()
@@ -122,7 +122,7 @@ pub fn encode(codebook: CodeBook, input: String) -> Result(String, String) {
   }
 }
 
-pub fn decode(codebook: CodeBook, input: String) -> Result(String, String) {
+pub fn decode(codebook: DecodeBook, input: String) -> Result(String, String) {
   let decoded =
     input
     |> string.trim()
