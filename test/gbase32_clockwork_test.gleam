@@ -1,7 +1,7 @@
+import gbase32_clockwork
+import gbase32_clockwork/options.{Lowercase}
 import gleeunit
 import gleeunit/should
-import gbase32_clockwork/options.{Lowercase}
-import gbase32_clockwork
 
 pub fn main() {
   gleeunit.main()

@@ -1,5 +1,5 @@
-import gleam/dict.{type Dict}
 import gbase32_clockwork/options.{type Options}
+import gleam/dict.{type Dict}
 
 pub type EncodeBook =
   Dict(Int, String)

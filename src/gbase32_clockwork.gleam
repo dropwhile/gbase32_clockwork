@@ -1,13 +1,13 @@
-import gleam/string
-import gleam/iterator.{Next}
-import gleam/list
-import gleam/dict
-import gbase32_clockwork/encoder.{decode, encode}
-import gbase32_clockwork/options.{type Options, Lowercase}
 import gbase32_clockwork/codebook.{
   type CodeBook, type DecodeBook, type DecodeFn, type EncodeBook, type EncodeFn,
   CodeBook,
 }
+import gbase32_clockwork/encoder.{decode, encode}
+import gbase32_clockwork/options.{type Options, Lowercase}
+import gleam/dict
+import gleam/iterator.{Next}
+import gleam/list
+import gleam/string
 
 const clockwork_codebook = "0123456789abcdefghjkmnpqrstvwxyz"
 

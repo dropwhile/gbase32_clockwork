@@ -1,3 +1,4 @@
+import gbase32_clockwork/codebook.{type DecodeBook, type EncodeBook}
 import gleam/bit_array
 import gleam/bytes_builder.{type BytesBuilder}
 import gleam/dict
@@ -5,7 +6,6 @@ import gleam/int.{bitwise_shift_left}
 import gleam/list
 import gleam/result
 import gleam/string
-import gbase32_clockwork/codebook.{type DecodeBook, type EncodeBook}
 
 fn to_symbol(c: Int, codebook: EncodeBook) -> Result(String, String) {
   dict.get(codebook, c)
