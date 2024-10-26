@@ -14,10 +14,10 @@ type EncodeBook =
 type DecodeBook =
   Dict(String, Int)
 
-pub type EncodeFn =
+type EncodeFn =
   fn(String) -> Result(String, String)
 
-pub type DecodeFn =
+type DecodeFn =
   fn(String) -> Result(String, String)
 
 /// Create a new encoder that can be be reused to encode strings in base32 clockwork
