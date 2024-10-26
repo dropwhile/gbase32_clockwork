@@ -1,5 +1,6 @@
-import gbase32_clockwork
-import gbase32_clockwork/options.{Lowercase}
+import gbase32_clockwork/gbase32
+import gleam/result
+import gleam/string
 import gleeunit
 import gleeunit/should
 
@@ -8,106 +9,113 @@ pub fn main() {
 }
 
 pub fn encode_uppercase_test() {
-  let codebook = gbase32_clockwork.new([])
+  let encode = gbase32.new_encoder()
 
-  codebook.encode("")
+  encode("")
   |> should.equal(Ok(""))
 
-  codebook.encode("f")
+  encode("f")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CR"))
 
-  codebook.encode("fo")
+  encode("fo")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CSQG"))
 
-  codebook.encode("foo")
+  encode("foo")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CSQPY"))
 
-  codebook.encode("foob")
+  encode("foob")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CSQPYRG"))
 
-  codebook.encode("fooba")
+  encode("fooba")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CSQPYRK1"))
 
-  codebook.encode("foobar")
+  encode("foobar")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CSQPYRK1E8"))
 
-  codebook.encode("Wow, it works!")
+  encode("Wow, it works!")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("AXQQEB10D5T20XVFE9NQ688"))
 }
 
 pub fn encode_lowercase_test() {
-  let codebook = gbase32_clockwork.new([Lowercase])
+  let encode = gbase32.new_encoder()
 
-  codebook.encode("")
+  encode("")
   |> should.equal(Ok(""))
 
-  codebook.encode("f")
+  encode("f")
   |> should.equal(Ok("cr"))
 
-  codebook.encode("fo")
+  encode("fo")
   |> should.equal(Ok("csqg"))
 
-  codebook.encode("foo")
+  encode("foo")
   |> should.equal(Ok("csqpy"))
 
-  codebook.encode("foob")
+  encode("foob")
   |> should.equal(Ok("csqpyrg"))
 
-  codebook.encode("fooba")
+  encode("fooba")
   |> should.equal(Ok("csqpyrk1"))
 
-  codebook.encode("foobar")
+  encode("foobar")
   |> should.equal(Ok("csqpyrk1e8"))
 
-  codebook.encode("Wow, it works!")
+  encode("Wow, it works!")
   |> should.equal(Ok("axqqeb10d5t20xvfe9nq688"))
 }
 
 pub fn decode_test() {
-  let codebook = gbase32_clockwork.new([])
+  let decode = gbase32.new_decoder()
 
-  codebook.decode("")
+  decode("")
   |> should.equal(Ok(""))
 
-  codebook.decode("CR")
+  decode("CR")
   |> should.equal(Ok("f"))
 
-  codebook.decode("CSQG")
+  decode("CSQG")
   |> should.equal(Ok("fo"))
 
-  codebook.decode("CSQPY")
+  decode("CSQPY")
   |> should.equal(Ok("foo"))
 
-  codebook.decode("CSQPYRG")
+  decode("CSQPYRG")
   |> should.equal(Ok("foob"))
 
-  codebook.decode("CSQPYRK1")
+  decode("CSQPYRK1")
   |> should.equal(Ok("fooba"))
 
-  codebook.decode("CSQPYRK1E8")
+  decode("CSQPYRK1E8")
   |> should.equal(Ok("foobar"))
 
-  codebook.decode(" CSQPYRK1E8  ")
+  decode(" CSQPYRK1E8  ")
   |> should.equal(Ok("foobar"))
 
-  codebook.decode("CSQPYRK1E8====")
+  decode("CSQPYRK1E8====")
   |> should.equal(Ok("foobar"))
 
-  codebook.decode(" CSQPYRK1E8==== ")
+  decode(" CSQPYRK1E8==== ")
   |> should.equal(Ok("foobar"))
 
-  codebook.decode("AXQQEB10D5T20XVFE9NQ688")
+  decode("AXQQEB10D5T20XVFE9NQ688")
   |> should.equal(Ok("Wow, it works!"))
 
-  codebook.decode("cSqPy")
+  decode("cSqPy")
   |> should.equal(Ok("foo"))
 
-  codebook.decode("CSQPYRKi")
+  decode("CSQPYRKi")
   |> should.equal(Ok("fooba"))
 
-  codebook.decode("csqpyrk1e8")
+  decode("csqpyrk1e8")
   |> should.equal(Ok("foobar"))
 
-  codebook.decode("C-SQPY")
+  decode("C-SQPY")
   |> should.equal(Error("Encoding outside range"))
 }

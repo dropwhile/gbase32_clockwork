@@ -17,20 +17,30 @@ Inspired by [shiguredo/base32_clockwork][1] and [this gist][2].
 gleam add gbase32_clockwork
 ```
 ```gleam
-import gbase32_clockwork
-import gbase32_clockwork/options.{Lowercase}
+import gbase32_clockwork/gbase32
+import gleam/result
+import gleam/string
+import gleeunit/should
 
 pub fn main() {
-  let codebook = gbase32_clockwork.new([])
+  // create a reusable encoder
+  let encode = gbase32.new_encoder()
+  
+  // by default, lowercase is emitted
+  encode("foobar")
+  |> should.equal(Ok("csqpyrk1e8"))
 
-  codebook.encode("foobar")
+  // to emit as uppercase, simply uppercase the output string
+  encode("foobar")
+  |> result.map(string.uppercase)
   |> should.equal(Ok("CSQPYRK1E8"))
 
-  // to emit as lowercase
-  let codebook_lc = gbase32_clockwork.new([Lowercase])
-  
-  codebook.encode("foobar")
-  |> should.equal(Ok("csqpyrk1e8"))
+  // create a reusable encoder
+  let decode = gbase32.new_encoder()
+
+  // a decoder will decode both upper and lowercase
+  decode("CSQPYRG")
+  |> should.equal(Ok("foob"))
 }
 ```
 

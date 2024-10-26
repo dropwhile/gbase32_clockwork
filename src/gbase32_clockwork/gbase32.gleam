@@ -1,11 +1,59 @@
-import gbase32_clockwork/codebook.{type DecodeBook, type EncodeBook}
 import gleam/bit_array
 import gleam/bytes_builder.{type BytesBuilder}
-import gleam/dict
+import gleam/dict.{type Dict}
 import gleam/int.{bitwise_shift_left}
 import gleam/list
 import gleam/result
 import gleam/string
+
+const clockwork_codebook = "0123456789abcdefghjkmnpqrstvwxyz"
+
+type EncodeBook =
+  Dict(Int, String)
+
+type DecodeBook =
+  Dict(String, Int)
+
+pub type EncodeFn =
+  fn(String) -> Result(String, String)
+
+pub type DecodeFn =
+  fn(String) -> Result(String, String)
+
+/// Create a new encoder that can be be reused to encode strings in base32 clockwork
+///
+pub fn new_encoder() -> EncodeFn {
+  let encodebook: EncodeBook =
+    clockwork_codebook
+    |> string.to_graphemes()
+    |> list.index_map(fn(x, i) { #(i, x) })
+    |> dict.from_list()
+
+  encode(encodebook, _)
+}
+
+/// Create a new decoder that can be be reused to decode strings from base32 clockwork
+///
+pub fn new_decoder() -> DecodeFn {
+  let decodebook: DecodeBook =
+    clockwork_codebook
+    |> string.to_graphemes()
+    |> list.index_map(fn(x, i) { #(x, i) })
+    |> dict.from_list()
+    |> dict.merge(
+      // add some aliases to help decode user entry errors
+      dict.from_list([
+        #("O", 0),
+        #("o", 0),
+        #("I", 1),
+        #("i", 1),
+        #("L", 1),
+        #("l", 1),
+      ]),
+    )
+
+  decode(decodebook, _)
+}
 
 fn to_symbol(c: Int, codebook: EncodeBook) -> Result(String, String) {
   dict.get(codebook, c)
@@ -105,7 +153,7 @@ fn decode_rec(
   }
 }
 
-pub fn encode(codebook: EncodeBook, input: String) -> Result(String, String) {
+fn encode(codebook: EncodeBook, input: String) -> Result(String, String) {
   let encoded =
     input
     |> bit_array.from_string()
@@ -122,10 +170,11 @@ pub fn encode(codebook: EncodeBook, input: String) -> Result(String, String) {
   }
 }
 
-pub fn decode(codebook: DecodeBook, input: String) -> Result(String, String) {
+fn decode(codebook: DecodeBook, input: String) -> Result(String, String) {
   let decoded =
     input
     |> string.trim()
+    |> string.lowercase
     |> string.to_graphemes()
     |> list.filter(fn(x) { x != "=" })
     |> decode_rec(codebook, _, 0, Ok(bytes_builder.new()))
