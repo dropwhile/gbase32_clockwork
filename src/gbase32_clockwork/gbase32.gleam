@@ -22,6 +22,14 @@ pub type DecodeFn =
 
 /// Create a new encoder that can be be reused to encode strings in base32 clockwork
 ///
+/// ## Examples
+///
+/// ```gleam
+/// let encode = new_encoder()
+/// encode("foobar")
+/// // -> Ok("csqpyrk1e8")
+/// ```
+///
 pub fn new_encoder() -> EncodeFn {
   let encodebook: EncodeBook =
     clockwork_codebook
@@ -33,6 +41,14 @@ pub fn new_encoder() -> EncodeFn {
 }
 
 /// Create a new decoder that can be be reused to decode strings from base32 clockwork
+///
+/// ## Examples
+///
+/// ```gleam
+/// let decode = new_decoder()
+/// decode("CSQPYRK1E8")
+/// // -> Ok("foobar")
+/// ```
 ///
 pub fn new_decoder() -> DecodeFn {
   let decodebook: DecodeBook =
