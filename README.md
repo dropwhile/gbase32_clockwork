@@ -35,7 +35,7 @@ pub fn main() {
   |> result.map(string.uppercase)
   |> should.equal(Ok("CSQPYRK1E8"))
 
-  // create a reusable encoder
+  // create a reusable decoder
   let decode = gbase32.new_encoder()
 
   // a decoder will decode both upper and lowercase
