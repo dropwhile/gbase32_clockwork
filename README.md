@@ -1,5 +1,8 @@
 # gbase32_clockwork
 
+> [!IMPORTANT]
+> Moved to [codeberg](https://codeberg.org/dropwhile/gbase32_clockwork)!
+
 ## About
 
 I wanted to try implementing base32_clockwork in Gleam.  
